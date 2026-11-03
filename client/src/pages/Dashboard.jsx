@@ -1,0 +1,11 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, BusFront, CheckCircle2, Clock3, FilePlus2, Files, Search } from 'lucide-react';
+import api from '../api';
+import { useAuth } from '../context/AuthContext';
+export default function Dashboard(){
+ const {user}=useAuth();const [apps,setApps]=useState([]);
+ useEffect(()=>{api.get('/applications/mine').then(r=>setApps(r.data.applications)).catch(()=>{});},[]);
+ const counts={Pending:apps.filter(a=>a.status==='Pending').length,Approved:apps.filter(a=>a.status==='Approved').length,Rejected:apps.filter(a=>a.status==='Rejected').length};
+ return <><div className="welcome-banner"><div><span className="eyebrow">STUDENT DASHBOARD</span><h1>Welcome back, {user?.name?.split(' ')[0]}!</h1><p>Apply for your bus pass and track your application with ease.</p><Link className="btn white-btn" to="/apply">Apply for Pass <ArrowRight size={17}/></Link></div><div className="banner-bus"><BusFront size={112}/><strong>ST</strong></div></div><div className="stat-grid"><div className="stat-card"><span className="stat-icon pink"><Files/></span><div><small>Total applications</small><h2>{apps.length}</h2></div></div><div className="stat-card"><span className="stat-icon amber"><Clock3/></span><div><small>Pending</small><h2>{counts.Pending}</h2></div></div><div className="stat-card"><span className="stat-icon green"><CheckCircle2/></span><div><small>Approved</small><h2>{counts.Approved}</h2></div></div></div><div className="section-heading"><div><span className="eyebrow">QUICK ACCESS</span><h2>What would you like to do?</h2></div></div><div className="quick-grid"><Link to="/apply" className="quick-card"><FilePlus2/><h3>Apply for Pass</h3><p>Submit a new student bus pass application.</p><span>Start application <ArrowRight size={15}/></span></Link><Link to="/applications" className="quick-card"><Files/><h3>My Applications</h3><p>Review all your submitted applications.</p><span>View applications <ArrowRight size={15}/></span></Link><Link to="/track" className="quick-card"><Search/><h3>Track Status</h3><p>Check the latest status of your application.</p><span>Track now <ArrowRight size={15}/></span></Link></div></>;
+}
